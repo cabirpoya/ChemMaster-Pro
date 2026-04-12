@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Pickaxe, FlaskConical, Sparkles, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ExtractionLabProps {
   onAnalyze: (query: string) => void;
@@ -7,80 +9,92 @@ interface ExtractionLabProps {
 
 export const ExtractionLab: React.FC<ExtractionLabProps> = ({ onAnalyze, isLoading }) => {
   const [input, setInput] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      // Wrapper to frame the request as an Extraction/Reverse synthesis task
       const extractionQuery = `
       *** حالت ویژه: استخراج و تولید عنصر (Reverse Synthesis) ***
-      
       ورودی کاربر: ${input}
-      
-      مأموریت:
-      بررسی کن آیا ترکیب یا واکنش مواد ورودی بالا، منجر به **تولید، آزادسازی یا استخراج یک عنصر خالص** (Element) از جدول تناوبی می‌شود؟ (مثلاً استخراج فلز از سنگ معدن، یا تجزیه یک ترکیب به عناصر سازنده).
-      
-      اگر بله:
-      1. نام عنصر(های) استخراج شده را مشخص کن.
-      2. فرآیند را دقیق شبیه‌سازی کن.
-      3. درصد خلوص و امکان‌پذیری را بررسی کن.
-      
-      اگر خیر (هیچ عنصر خالصی تولید نمی‌شود):
-      توضیح بده چرا و چه ترکیب جدیدی ساخته می‌شود.
+      مأموریت: بررسی کن آیا ترکیب یا واکنش مواد ورودی بالا، منجر به **تولید، آزادسازی یا استخراج یک عنصر خالص** (Element) از جدول تناوبی می‌شود؟
       `;
       onAnalyze(extractionQuery);
     }
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-md border border-indigo-100 p-6 mt-6 relative overflow-hidden">
-      {/* Decorative background element */}
-      <div className="absolute top-0 left-0 w-20 h-20 bg-indigo-200 rounded-br-full opacity-20 pointer-events-none"></div>
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 relative z-10">
-        <div>
-          <h2 className="text-indigo-900 font-bold text-lg flex items-center gap-2">
-            <span>⚗️</span>
-            آزمایشگاه استخراج (برعکس جدول تناوبی)
-          </h2>
-          <p className="text-sm text-indigo-700 mt-1 opacity-80">
-            ترکیب مواد برای تولید یک عنصر خالص. (مثال: اکسید آهن + کربن ⬅️ آهن)
-          </p>
+    <div className="bg-[#2b2e4a] rounded-2xl shadow-2xl border border-white/5 relative overflow-hidden transition-all duration-300">
+      <div className="absolute top-0 left-0 w-32 h-32 bg-indigo-500/10 rounded-br-full blur-3xl pointer-events-none"></div>
+      
+      <div className="relative z-10">
+        <div 
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex items-center justify-between p-8 hover:bg-white/5 transition-colors text-right cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <FlaskConical className="text-indigo-400 w-6 h-6" />
+            <h2 className="text-xl font-bold text-white">آزمایشگاه استخراج (Reverse Synthesis)</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/50"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/20"></div>
+            </div>
+            {isOpen ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
+          </div>
         </div>
+
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="px-8 pb-8 pt-0">
+                <p className="text-sm text-gray-400 mb-8 leading-relaxed">
+                  ترکیب مواد برای تولید یک عنصر خالص. (مثال: اکسید آهن + کربن ⬅️ آهن)
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="relative">
+                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="مثال: الکترولیز آب، یا واکنش آلومینیوم..."
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pr-12 pl-4 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    disabled={isLoading || !input.trim()}
+                    className="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  >
+                    {isLoading ? (
+                      <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                    ) : (
+                      <>
+                        <Pickaxe className="w-5 h-5" />
+                        <span>استخراج عنصر</span>
+                        <Sparkles className="w-4 h-4 text-indigo-200" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <form onSubmit={handleSubmit} className="relative z-10">
-        <div className="flex flex-col md:flex-row gap-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="مثال: الکترولیز آب، یا واکنش آلومینیوم با اکسید کروم..."
-            className="flex-1 p-3 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-gray-400"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className={`
-              whitespace-nowrap px-6 py-3 rounded-lg font-bold text-white shadow-md transition-all flex items-center justify-center gap-2
-              ${isLoading || !input.trim()
-                ? 'bg-indigo-300 cursor-not-allowed'
-                : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg active:scale-95'
-              }
-            `}
-          >
-            {isLoading ? (
-              <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-            ) : (
-              <>
-                <span>⛏️</span>
-                استخراج عنصر
-              </>
-            )}
-          </button>
-        </div>
-      </form>
     </div>
   );
 };
+

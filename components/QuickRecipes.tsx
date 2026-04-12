@@ -1,4 +1,5 @@
 import React from 'react';
+import { Sparkles, Wind, Droplets, Flame, Star } from 'lucide-react';
 
 interface QuickRecipesProps {
   onAnalyze: (query: string) => void;
@@ -9,53 +10,65 @@ export const QuickRecipes: React.FC<QuickRecipesProps> = ({ onAnalyze, isLoading
   const recipes = [
     {
       title: 'ساخت صابون',
-      icon: '🧼',
+      icon: <Droplets className="w-8 h-8 text-emerald-400" />,
       query: 'چطور در خانه با روغن و سود سوزآور صابون بسازم؟',
-      color: 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200'
+      rating: 5
     },
     {
       title: 'عطر خانگی',
-      icon: '🌸',
+      icon: <Wind className="w-8 h-8 text-pink-400" />,
       query: 'چطور با الکل سفید و اسانس معطر یک عطر خوشبو بسازم؟',
-      color: 'bg-pink-100 text-pink-800 border-pink-200 hover:bg-pink-200'
+      rating: 4
     },
     {
       title: 'شوینده قوی',
-      icon: '🧽',
+      icon: <Droplets className="w-8 h-8 text-blue-400" />,
       query: 'چطور یک شوینده قوی برای چربی‌های آشپزخانه بسازم؟',
-      color: 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200'
+      rating: 5
     },
     {
       title: 'آتشفشان خانگی',
-      icon: '🌋',
+      icon: <Flame className="w-8 h-8 text-orange-400" />,
       query: 'ترکیب جوش شیرین و سرکه چه واکنشی دارد؟ (آتشفشان خانگی)',
-      color: 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200'
+      rating: 4
     }
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-2xl">✨</span>
-        <h2 className="text-xl font-bold text-gray-800">شیمی روزمره (دستورالعمل‌های سریع)</h2>
+    <div className="bg-[#2b2e4a] rounded-2xl shadow-2xl p-8 border border-white/5 h-full">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-xl font-bold text-white flex items-center gap-3">
+          <Sparkles className="text-yellow-400 w-6 h-6" />
+          شیمی روزمره (دستورالعمل‌های سریع)
+        </h2>
+        <div className="flex gap-2">
+          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+          <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+          <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+        </div>
       </div>
-      <p className="text-gray-500 text-sm mb-6">
-        بدون نیاز به دانش شیمی، با یک کلیک دستورالعمل ساخت مواد کاربردی را ببینید:
-      </p>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {recipes.map((recipe, index) => (
           <button
             key={index}
             onClick={() => onAnalyze(recipe.query)}
             disabled={isLoading}
-            className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-200 ${recipe.color} ${isLoading ? 'opacity-50 cursor-not-allowed' : 'transform hover:-translate-y-1 hover:shadow-md'}`}
+            className={`chem-card group ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <span className="text-4xl mb-2">{recipe.icon}</span>
-            <span className="font-bold text-sm text-center">{recipe.title}</span>
+            <div className="mb-4 p-3 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+              {recipe.icon}
+            </div>
+            <span className="font-bold text-white mb-2">{recipe.title}</span>
+            <div className="flex gap-1">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-3 h-3 ${i < recipe.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-600'}`} />
+              ))}
+            </div>
           </button>
         ))}
       </div>
     </div>
   );
 };
+

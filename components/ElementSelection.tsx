@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ELEMENT_GROUPS, ElementItem } from '../data/elements';
+import { Atom, Check, Search, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ElementSelectionProps {
   onAnalyze: (query: string) => void;
@@ -8,6 +10,8 @@ interface ElementSelectionProps {
 
 export const ElementSelection: React.FC<ElementSelectionProps> = ({ onAnalyze, isLoading }) => {
   const [selectedElements, setSelectedElements] = useState<ElementItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleElement = (element: ElementItem) => {
     const isSelected = selectedElements.some(e => e.symbol === element.symbol);
@@ -16,7 +20,6 @@ export const ElementSelection: React.FC<ElementSelectionProps> = ({ onAnalyze, i
       setSelectedElements(prev => prev.filter(e => e.symbol !== element.symbol));
     } else {
       if (selectedElements.length >= 5) {
-        alert("حداکثر می‌توانید ۵ عنصر را انتخاب کنید.");
         return;
       }
       setSelectedElements(prev => [...prev, element]);
@@ -32,72 +35,106 @@ export const ElementSelection: React.FC<ElementSelectionProps> = ({ onAnalyze, i
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 mt-6">
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-        <h2 className="text-gray-800 font-bold text-lg flex items-center gap-2">
-          <span>🧬</span>
-          انتخاب از جدول تناوبی
-        </h2>
-        
+    <div className="bg-[#2b2e4a] rounded-2xl shadow-2xl border border-white/5 flex flex-col transition-all duration-300">
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-8 hover:bg-white/5 transition-colors text-right cursor-pointer"
+      >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+          <Atom className="text-purple-400 w-6 h-6" />
+          <h2 className="text-xl font-bold text-white">جدول تناوبی هوشمند</h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-xs font-bold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
             {selectedElements.length} / 5 انتخاب شده
-          </span>
-          <button
-            onClick={handleAnalyzeSelected}
-            disabled={isLoading || selectedElements.length === 0}
-            className={`
-              text-sm px-4 py-2 rounded-lg font-bold text-white transition-all
-              ${isLoading || selectedElements.length === 0
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg active:scale-95'
-              }
-            `}
-          >
-            {isLoading ? '...' : 'تحلیل موارد انتخاب شده'}
-          </button>
+          </div>
+          {isOpen ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
         </div>
       </div>
 
-      <div className="space-y-6 h-96 overflow-y-auto pr-2 custom-scrollbar border-t border-gray-200 pt-4">
-        {ELEMENT_GROUPS.map((group) => (
-          <div key={group.groupName}>
-            <h3 className="text-blue-800 font-semibold text-sm mb-3 sticky top-0 bg-white/95 backdrop-blur-sm py-2 border-b border-blue-100 z-10">
-              {group.groupName}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {group.elements.map((element) => {
-                const isSelected = selectedElements.some(e => e.symbol === element.symbol);
-                return (
-                  <button
-                    key={element.symbol}
-                    onClick={() => toggleElement(element)}
-                    type="button"
-                    className={`
-                      relative flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all
-                      ${isSelected 
-                        ? 'border-green-500 bg-green-50 text-green-900 shadow-sm' 
-                        : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-blue-300 hover:bg-blue-50'
-                      }
-                    `}
-                  >
-                    {isSelected && (
-                      <div className="absolute top-1 right-1 text-green-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                          <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
-                        </svg>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="px-8 pb-8 pt-0 flex flex-col h-[500px]">
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={handleAnalyzeSelected}
+                  disabled={isLoading || selectedElements.length === 0}
+                  className="px-6 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  تحلیل نهایی
+                </button>
+              </div>
+
+              <div className="relative mb-6">
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="جستجوی عنصر..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pr-10 pl-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                />
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-8">
+                {ELEMENT_GROUPS.map((group) => {
+                  const filteredElements = group.elements.filter(e => 
+                    e.name.includes(searchTerm) || e.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+                  );
+
+                  if (filteredElements.length === 0) return null;
+
+                  return (
+                    <div key={group.groupName}>
+                      <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                        {group.groupName}
+                      </h3>
+                      <div className="grid grid-cols-4 gap-3">
+                        {filteredElements.map((element) => {
+                          const isSelected = selectedElements.some(e => e.symbol === element.symbol);
+                          return (
+                            <button
+                              key={element.symbol}
+                              onClick={() => toggleElement(element)}
+                              className={`relative flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all group ${
+                                isSelected 
+                                  ? 'border-purple-500 bg-purple-500/10 scale-95' 
+                                  : 'border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                              }`}
+                            >
+                              {isSelected && (
+                                <div className="absolute -top-1 -right-1 bg-purple-500 rounded-full p-0.5 shadow-lg">
+                                  <Check className="w-3 h-3 text-white" />
+                                </div>
+                              )}
+                              <span className="text-lg font-bold text-white">{element.symbol}</span>
+                              <span className="text-[8px] text-gray-400 mt-1 truncate w-full text-center">{element.name}</span>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
-                    <span className="text-lg font-bold">{element.symbol}</span>
-                    <span className="text-xs mt-1">{element.name}</span>
-                    <span className="text-[10px] text-gray-400 mt-0.5 opacity-80">{element.number}</span>
-                  </button>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+

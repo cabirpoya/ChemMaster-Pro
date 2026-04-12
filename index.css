@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --sidebar-bg: #1a1c2c;
+  --header-bg: #ffffff;
+  --hero-bg: #f5f7f9;
+  --main-bg: #1e213a;
+  --card-bg: #2b2e4a;
+  --accent-green: #5cb85c;
+  --accent-blue: #00aaff;
+  --text-light: #ffffff;
+  --text-dark: #333333;
+  --text-muted: #8e9299;
+}
+
+body {
+  margin: 0;
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--main-bg);
+  color: var(--text-light);
+}
+
+.dark-grid-bg {
+  background-color: var(--main-bg);
+}
+
+.sidebar-icon {
+  @apply w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200;
+}
+
+.sidebar-icon:hover {
+  @apply scale-110;
+}
+
+.nav-tab {
+  @apply px-4 py-2 text-sm font-medium cursor-pointer transition-all duration-200 border-b-2 border-transparent;
+}
+
+.nav-tab.active {
+  @apply text-blue-400 border-blue-400;
+}
+
+.chem-card {
+  @apply bg-[#2b2e4a] rounded-xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:bg-[#35395a] cursor-pointer shadow-lg;
+}
+
+.hero-section {
+  background-color: var(--hero-bg);
+  color: var(--text-dark);
+}
